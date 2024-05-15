@@ -30,7 +30,7 @@ public class ExpenseService {
         ));
     }
 
-    public void deleteExpense(int expenseId) {
+    public void deleteExpense(Long expenseId) {
         String sql = "DELETE FROM expense WHERE expense_Id = ?";
         jdbcTemplate.update(sql, expenseId);
     }

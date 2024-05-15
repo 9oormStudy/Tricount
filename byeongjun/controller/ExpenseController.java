@@ -35,4 +35,11 @@ public class ExpenseController {
     public List<Expense> getExpensesBySettlementId(@RequestParam Long settlementId) {
         return expenseService.getExpensesBySettlementId(settlementId);
     }
+
+    @DeleteMapping("/delete_expense")
+    @ResponseBody
+    public void deleteExpense(@RequestParam Long expense_id) {
+        expenseService.deleteExpense(expense_id);
+    }
+
 }

@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.*;
 import proj.tricount.domain.settlement.Settlement;
 import proj.tricount.service.SettlementService;
 
+import java.util.List;
+
 @Slf4j
 @Controller
 @RequiredArgsConstructor
@@ -44,6 +46,18 @@ public class SettlementController {
     @GetMapping("/settlements/{settlementId}")
     @ResponseBody
     public Settlement getSettlementById(@PathVariable Long settlementId) {
-        return settlementService.getSettlementById(settlementId);
+        return settlementService.getSettlementWithExpenses(settlementId);
+    }
+
+    @GetMapping("/settlements")
+    @ResponseBody
+    public List<Settlement> getAllSettlements() {
+        return settlementService.getAllSettlements();
+    }
+
+    @DeleteMapping("/delete_settlements")
+    @ResponseBody
+    public void deleteSettlements(@RequestParam Long settlementId) {
+        settlementService.deleteSettlement(settlementId);
     }
 }
