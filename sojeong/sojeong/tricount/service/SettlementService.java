@@ -34,4 +34,20 @@ public class SettlementService {
         return settlementRepository.findParticipantsBySettlementId(id);
     }
 
+    public ExpenseResult addExpense(Expense expense, Long id){
+        ExpenseResult expenseResult = new ExpenseResult();
+        expenseResult.setTitle(expense.getTitle());
+        expenseResult.setMemberId(expense.getMemberId());
+        expenseResult.setAmount(expense.getAmount());
+        expenseResult.setDate(LocalDateTime.now());
+        Long expenseId = settlementRepository.addExpense(expenseResult, id);
+        expenseResult.setId(expenseId);
+        return expenseResult;
+    }
+
+    public List<Expense> listOfExpense(Long id){
+        return settlementRepository.findExpenseListBySettlementId(id);
+    }
+
+
 }

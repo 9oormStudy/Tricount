@@ -34,5 +34,17 @@ public class SettlementController {
         return new ResponseEntity<>(settlement, HttpStatus.OK);
     }
 
+    @PostMapping("/settlement/{id}/expense/add")
+    public ResponseEntity<ExpenseResult> addExpenseToSettlement(@RequestBody Expense expense, @PathVariable("id") Long id){
+        ExpenseResult result = settlementService.addExpense(expense, id);
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    @PostMapping("/settlement/{id}/expense")
+    public ResponseEntity<List<Expense>> listOfExpense(@PathVariable Long id){
+        List<Expense> expenses = settlementService.listOfExpense(id);
+        return new ResponseEntity<>(expenses, HttpStatus.OK);
+    }
+
 
 }

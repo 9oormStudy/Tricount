@@ -70,4 +70,50 @@ public class SettlementRepository {
         };
     }
 
+    public Long addExpense(ExpenseResult expense, Long id){
+        String checkExistSql = "SELECT COUNT(*) FROM settlement_participants WHERE settlement_id = ? AND member_id = ?";
+        Integer count = jdbcTemplate.queryForObject(checkExistSql, Integer.class, id, expense.getMemberId());
+        if (count == null || count == 0){
+            throw new RuntimeException("정산에 포함 되어있는 않은 회원입니다.");
+        }
+
+        String sql = "INSERT INTO expense (title, settlement_id, member_id, amount, date) VALUES (?, ?, ?, ?, ?)";
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        jdbcTemplate.update(connection -> {
+            PreparedStatement ps = connection.prepareStatement(sql, new String[] {"id"});
+            ps.setString(1, expense.getTitle());
+            ps.setLong(2, id);
+            ps.setLong(3, expense.getMemberId());
+            ps.setBigDecimal(4, expense.getAmount());
+            ps.setTimestamp(5, Timestamp.valueOf(expense.getDate()));
+            return ps;
+        }, keyHolder);
+        return keyHolder.getKey().longValue();
+    }
+
+    public List<Expense> findExpenseListBySettlementId(Long id){
+        String checkExistSql = "SELECT COUNT(*) FROM settlement_participants WHERE settlement_id = ? AND member_id = ?";
+        Integer count = jdbcTemplate.queryForObject(checkExistSql, Integer.class, id, MemberContext.getMember().getId());
+        if (count == null || count == 0){
+            throw new RuntimeException("정산에 포함 되어있는 않은 회원입니다.");
+        }
+
+        String sql = "SELECT * FROM expense WHERE settlement_id = ?";
+        return jdbcTemplate.queryForObject(sql, expenseListRowMapper(), id);
+    }
+
+    private RowMapper<List<Expense>> expenseListRowMapper() {
+        return (rs, rowNum) -> {
+            List<Expense> list = new ArrayList<>();
+            do {
+                Expense expense = new Expense();
+                expense.setTitle(rs.getString("title"));
+                expense.setMemberId(rs.getLong("member_id"));
+                expense.setAmount(rs.getBigDecimal("amount"));
+                list.add(expense);
+            } while(rs.next());
+            return list;
+        };
+    }
+
 }
