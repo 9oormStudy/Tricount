@@ -46,5 +46,11 @@ public class SettlementController {
         return new ResponseEntity<>(expenses, HttpStatus.OK);
     }
 
+    @PostMapping("/settlement/{id}/balance")
+    public ResponseEntity<List<Balance>> settlementBalance(@PathVariable("id") Long id){
+        List<Balance> balance = settlementService.settlementBalance(id);
+        return new ResponseEntity<>(balance, HttpStatus.OK);
+    }
+
 
 }
