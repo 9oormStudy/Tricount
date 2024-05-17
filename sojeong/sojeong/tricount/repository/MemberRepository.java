@@ -24,11 +24,7 @@ public class MemberRepository {
 
     public Member findByLoginId(String loginId){
         String sql = "SELECT * FROM member WHERE login_id = ?";
-        try{
-            return jdbcTemplate.queryForObject(sql, memberRowMapper(), loginId);
-        } catch (EmptyResultDataAccessException e) {
-            throw new AccessException("찾을 수 없는 회원입니다");
-        }
+        return jdbcTemplate.queryForObject(sql, memberRowMapper(), loginId);
     }
 
     private RowMapper<Member> memberRowMapper() {
