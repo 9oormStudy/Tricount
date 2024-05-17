@@ -27,7 +27,7 @@ public class MemberRepository {
         try{
             return jdbcTemplate.queryForObject(sql, memberRowMapper(), loginId);
         } catch (EmptyResultDataAccessException e) {
-            throw new RuntimeException("찾을 수 없는 회원입니다");
+            throw new AccessException("찾을 수 없는 회원입니다");
         }
     }
 

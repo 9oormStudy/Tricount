@@ -36,20 +36,20 @@ public class LoginCheckInterceptor implements HandlerInterceptor {
         // 2. 쿠키
         Cookie[] cookies = request.getCookies();
         if(cookies == null) {
-            throw new RuntimeException("로그인이 필요합니다.");
+            throw new AccessException("로그인이 필요합니다.");
         }
 
         Map<String, Cookie> cookieMap = Arrays.stream(cookies).collect(Collectors.toMap(Cookie::getName, Function.identity()));
         Cookie loginCookie = cookieMap.get("memberLoginId");
         if(loginCookie == null) {
-            throw new RuntimeException("로그인이 필요합니다.");
+            throw new AccessException("로그인이 필요합니다.");
         }
 
         try {
             Member loginMember = memberRepository.findByLoginId(loginCookie.getValue());
             MemberContext.setMember(loginMember);
         } catch (Exception e) {
-            throw new RuntimeException("회원정보를 찾을 수 없습니다.");
+            throw new AccessException("회원정보를 찾을 수 없습니다.");
         }
 
         return true;

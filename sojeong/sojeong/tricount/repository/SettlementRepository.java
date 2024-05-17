@@ -30,16 +30,21 @@ public class SettlementRepository {
         String checkDuplicateSql = "SELECT COUNT(*) FROM settlement_participants WHERE settlement_id = ? AND member_id = ?";
         Integer count = jdbcTemplate.queryForObject(checkDuplicateSql, Integer.class, id, MemberContext.getMember().getId());
         if (count == null){
-            throw new RuntimeException("없는 정산 모임입니다.");
+            throw new AccessException("없는 정산 모임입니다.");
         }
         if (count > 0){
-            throw new RuntimeException("이미 정산에 포함되어 있는 회원입니다.");
+            throw new AccessException("이미 정산에 포함되어 있는 회원입니다.");
         }
         String sql = "INSERT INTO settlement_participants (settlement_id, member_id) VALUES (?, ?)";
         jdbcTemplate.update(sql, id, MemberContext.getMember().getId());
     }
 
     public Settlement findParticipantsBySettlementId(Long id){
+        String checkExistSql = "SELECT COUNT(*) FROM settlement_participants WHERE settlement_id = ? AND member_id = ?";
+        Integer count = jdbcTemplate.queryForObject(checkExistSql, Integer.class, id, MemberContext.getMember().getId());
+        if (count == null || count == 0){
+            throw new AccessException("정산에 포함 되어있는 않은 회원입니다.");
+        }
         String sql = "SELECT settlement_id, title, member_id, login_id, password, name " +
                 "FROM settlement s " +
                 "LEFT JOIN settlement_participants sp ON s.id = sp.settlement_id " +
@@ -74,7 +79,7 @@ public class SettlementRepository {
         String checkExistSql = "SELECT COUNT(*) FROM settlement_participants WHERE settlement_id = ? AND member_id = ?";
         Integer count = jdbcTemplate.queryForObject(checkExistSql, Integer.class, id, expense.getMemberId());
         if (count == null || count == 0){
-            throw new RuntimeException("정산에 포함 되어있는 않은 회원입니다.");
+            throw new AccessException("정산에 포함 되어있는 않은 회원입니다.");
         }
 
         String sql = "INSERT INTO expense (title, settlement_id, member_id, amount, date) VALUES (?, ?, ?, ?, ?)";
@@ -95,7 +100,7 @@ public class SettlementRepository {
         String checkExistSql = "SELECT COUNT(*) FROM settlement_participants WHERE settlement_id = ? AND member_id = ?";
         Integer count = jdbcTemplate.queryForObject(checkExistSql, Integer.class, id, MemberContext.getMember().getId());
         if (count == null || count == 0){
-            throw new RuntimeException("정산에 포함 되어있는 않은 회원입니다.");
+            throw new AccessException("정산에 포함 되어있는 않은 회원입니다.");
         }
 
         String sql = "SELECT * FROM expense WHERE settlement_id = ?";
