@@ -5,6 +5,7 @@ import hello.tricount.service.SettlementService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -20,5 +21,10 @@ public class SettlementController {
         return new ResponseEntity<>(settlement, HttpStatus.OK);
     }
 
+    @PostMapping("/settles/{id}/join")
+    public ResponseEntity<Void> joinSettlement(@PathVariable Long id) {
+        settlementService.joinSettlement(id);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
 
 }
