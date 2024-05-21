@@ -1,8 +1,13 @@
 package hello.tricount.controller;
 
+import hello.tricount.TricountApiConst;
+import hello.tricount.model.LoginRequest;
 import hello.tricount.model.Member;
 import hello.tricount.model.SignupRequest;
 import hello.tricount.service.MemberService;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,5 +34,26 @@ public class AuthController {
                 .name(signupRequest.getName())
                 .build();
         return new ResponseEntity<>(memberService.signup(member), HttpStatus.OK);
+    }
+
+    @PostMapping("login")
+    public ResponseEntity<Member> login(
+        @RequestBody LoginRequest loginRequest,
+        HttpServletResponse response
+    ){
+        Member member = memberService.login(loginRequest.getLoginId(), loginRequest.getPassword());
+
+        Cookie cookie = new Cookie(TricountApiConst.LOGIN_MEMBER_COOKIE, String.valueOf(member.getId()));
+        response.addCookie(cookie);
+
+        return new ResponseEntity<>(member, HttpStatus.OK);
+    }
+
+    @PostMapping("logout")
+    public ResponseEntity<Member> logout(HttpServletResponse response) {
+        Cookie cookie = new Cookie(TricountApiConst.LOGIN_MEMBER_COOKIE, null);
+        cookie.setMaxAge(0);
+        response.addCookie(cookie);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }
